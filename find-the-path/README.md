@@ -44,6 +44,11 @@ I found that since adding in the `minWeights`, filtering out doubling back
 routes (which was done before the paths are filtered based on weight) was no
 longer necessary.  Rather, it was slowing things done, so I removed it.
 
+Every path weight calculation was done over the entire path.  I sped things up
+by a factor of 10 by updating the Path type to include the weight so the total
+weight is calculated incrementally.
+
+
 ## The Numbers
 
 Test case 1 is a 7 row by 100 column grid
@@ -54,15 +59,18 @@ over night, and I never saw and answer pop out).  Once I did some of the basic
 optimizations listed above, I was solving a single query in ~180s.  With the
 rest of the optimizations listed above, I was able to get that down to ~40s.
 
-I figure I need to get this down to 6s which I think is the HackerRank time
-limit.  However, that still won't be enough because each test case has multiple
-queries.
+By calculating weights incrementally, I was able to get the ~40s down to ~4s,
+and this reduced to ~2.5s once the profiling was turned off.  However, this is
+for a single query, and test case 1 has 1000 queries.  When run together, the
+total time was ~3365s.
+
+This is far away from my target of ~6s which I think is the HackerRank time
+limit.
 
 
 ## Next Plan
 
-I know that a lot of time is being spent calculating the weights of paths.
-Currently, every calculation is being done over the entire path.  It will be
-better to increment the weight as a new location is added.  To do this, I will
-need to update the data structure for the path to include the weight.
+Since the most efficient path contains the most efficient path between any two
+locations on the path, this could be a basis for speeding up later queries.
+However, this alone does not seem to be enough.
 
